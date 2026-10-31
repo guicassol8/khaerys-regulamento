@@ -1,0 +1,17 @@
+title: Regulamento do Recruta da Lança
+description: >-
+  Doryan — por ordem do Feixe. Entregue no alistamento.
+  Não se perde, não se vende, não se empresta.
+lang: pt-BR
+
+# Mesmo arranjo da cartilha de Ossara (.github/publicar/_config.yml): sem
+# tema, layout e folha de estilo deste repositório. Layout e folha são os
+# de Doryan (.github/publicar-doryan/); a guarda é a mesma das duas.
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+
+exclude:
+  - _config.yml

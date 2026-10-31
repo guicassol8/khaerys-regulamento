@@ -1,0 +1,810 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Regulamento do Recruta da Lança — folha de estilo única.
+
+   Irmã da cartilha de Ossara (.github/publicar/assets/cartilha.css):
+   a mesma espinha — a página obedece ao céu, a fase é atributo do
+   <html>, nenhuma requisição a terceiro — e outra pele. Ossara é papel
+   de guilda pobre; Doryan é cal de muralha e aço de quartel. Onde a
+   cartilha sussurra em serifa, o regulamento fala em caixa alta.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── As fases ──────────────────────────────────────────────────── */
+
+/* Sol — a forja. Cal clara na parede, tinta de ferro, acento de
+   ferro quente. Nada de âmbar: Doryan não tem papel, tem muro. */
+:root,
+[data-fase="sol"] {
+  color-scheme: light;
+
+  --fundo:        #dfdbd3;   /* cal                                  */
+  --fundo-2:      #d0cbc1;   /* caixas, pedra mais funda             */
+  --faixa:        #d8d3ca;   /* linha alternada de tabela            */
+  --tinta:        #1b1a18;   /* ferro                                */
+  --tinta-fraca:  #55514b;
+  --regua:        #a7a198;
+  --brasa:        #9a2f12;   /* ferro quente: acento, links, artigos */
+  --brasa-fraca:  #d2673f;   /* só como fundo e realce, nunca texto  */
+  --carimbo:      #1b1a18;   /* estêncil pintado de preto            */
+
+  --glifo: "■";
+  --grao: .05;
+}
+
+/* Lua — aço frio. Gunmetal neutro, nada do azul de Ossara; o acento
+   é gelo — frio, como o quartel diz. */
+[data-fase="lua"] {
+  color-scheme: dark;
+
+  --fundo:        #141718;
+  --fundo-2:      #1e2224;
+  --faixa:        #191c1e;
+  --tinta:        #d5d9db;
+  --tinta-fraca:  #8f989e;
+  --regua:        #30363a;
+  --brasa:        #7fb9cf;
+  --brasa-fraca:  #3f6e80;
+  --carimbo:      #c9d1d6;   /* estêncil pintado de branco           */
+
+  --glifo: "□";
+  --grao: .035;
+}
+
+/* O Fio — a hora da Lança. Em Ossara o Fio drena a página; aqui ele a
+   afia. Preto, branco, e o acento vira lâmina. Continua sem espetáculo:
+   nenhum movimento, só contraste. */
+[data-fase="fio"] {
+  color-scheme: dark;
+
+  --fundo:        #0c0c0c;
+  --fundo-2:      #171717;
+  --faixa:        #111111;
+  --tinta:        #ededed;
+  --tinta-fraca:  #a3a3a3;
+  --regua:        #3a3a3a;
+  --brasa:        #ffffff;
+  --brasa-fraca:  #7a7a7a;
+  --carimbo:      #ededed;
+
+  --glifo: "◆";
+  --grao: .03;
+}
+
+:root {
+  /* Sem fonte externa. A condensada existe em todo sistema de alguma
+     forma — Arial Narrow no Windows, Helvetica Neue condensada no
+     macOS, Liberation Sans Narrow e Nimbus Sans Narrow no Linux. */
+  --fonte-corpo: "Segoe UI", Roboto, "Helvetica Neue", "Liberation Sans",
+                 Arial, sans-serif;
+  --fonte-titulo: "Arial Narrow", "Helvetica Neue Condensed", "Roboto Condensed",
+                  "Liberation Sans Narrow", "Nimbus Sans Narrow",
+                  "DejaVu Sans Condensed", "Arial Narrow Bold", sans-serif;
+  --fonte-oficial: ui-monospace, "SFMono-Regular", "Liberation Mono", monospace;
+
+  --medida: 68ch;      /* medida de leitura                          */
+  --pagina: 62rem;     /* largura útil da folha inteira              */
+  --margem: 1.25rem;
+  --sumario: 14.5rem;  /* coluna do índice                           */
+  --vao: 3rem;         /* entre o índice e o texto                   */
+  --goteira: 4.5rem;   /* onde mora o número do artigo               */
+}
+
+/* Em tela larga a folha termina onde o texto termina. O vão cresce em
+   relação ao de Ossara porque é nele que os números dos artigos vivem. */
+@media (min-width: 62rem) {
+  :root {
+    --vao: 5.75rem;
+    --pagina: calc(var(--sumario) + var(--vao) + var(--medida) + var(--margem) * 2);
+  }
+}
+
+@media (min-width: 86rem) {
+  html { font-size: 109%; }
+  :root { --sumario: 16rem; --vao: 6.25rem; --margem: 1.5rem; }
+}
+
+@media (min-width: 106rem) {
+  html { font-size: 118%; }
+  :root { --sumario: 18rem; --vao: 6.75rem; }
+}
+
+@media (min-width: 140rem) {
+  html { font-size: 128%; }
+  :root { --sumario: 19rem; }
+}
+
+/* ── Base ──────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  /* A barra de ferro no alto da página. Vai de ponta a ponta. */
+  border-top: .6rem solid var(--tinta);
+  background: var(--fundo);
+  color: var(--tinta);
+  font: 1.03rem/1.62 var(--fonte-corpo);
+  font-variant-numeric: lining-nums tabular-nums;
+  transition: background-color .2s linear, color .2s linear, border-color .2s linear;
+}
+
+/* Aço escovado em vez de grão de papel: linhas finas na horizontal,
+   na cor da tinta, quase invisíveis. Sobre a cal lê como reboco; sobre
+   o gunmetal, como metal. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: var(--grao);
+  background-image:
+    repeating-linear-gradient(180deg, currentColor 0 1px, transparent 1px 3px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+a {
+  color: var(--brasa);
+  text-decoration-thickness: 2px;
+  text-underline-offset: .16em;
+}
+a:hover { text-decoration-color: var(--brasa-fraca); }
+
+:focus-visible {
+  outline: 2px solid var(--brasa);
+  outline-offset: 2px;
+}
+
+.pular {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 5;
+  padding: .6rem 1rem;
+  background: var(--fundo-2);
+  color: var(--tinta);
+  font: .8rem var(--fonte-oficial);
+  border: 2px solid var(--tinta);
+}
+.pular:focus { left: .5rem; top: .5rem; }
+
+/* ── Barra de rolagem ──────────────────────────────────────────── */
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--tinta-fraca) transparent;
+}
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background-color: var(--tinta-fraca);
+  background-clip: content-box;
+  border: 3px solid transparent;
+  border-radius: 0;              /* polegar reto: isto não é papel      */
+}
+::-webkit-scrollbar-thumb:hover { background-color: var(--brasa); }
+
+/* ── Timbre ────────────────────────────────────────────────────── */
+
+.timbre {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "marca"
+    "carimbo"
+    "controles";
+  gap: 1.1rem;
+  max-width: var(--pagina);
+  margin: 0 auto;
+  padding: 1.4rem var(--margem) 1.1rem;
+  border-bottom: 2px solid var(--tinta);
+}
+
+@media (min-width: 48rem) {
+  .timbre {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "marca     carimbo"
+      "controles carimbo";
+    gap: 1rem 1.5rem;
+    align-items: center;
+    padding-top: 1.6rem;
+  }
+}
+
+.timbre-marca {
+  grid-area: marca;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.selo {
+  flex: 0 0 auto;
+  width: 3.6rem;
+  height: 3.6rem;
+  color: var(--tinta);
+}
+
+.timbre-linhas p { margin: 0; }
+
+/* A etiqueta de quartel: caixa alta em fundo de ferro. */
+.timbre-guilda {
+  display: inline-block;
+  padding: .18rem .55rem .14rem;
+  background: var(--tinta);
+  color: var(--fundo);
+  font: 700 .66rem/1.4 var(--fonte-oficial);
+  letter-spacing: .24em;
+  text-indent: .24em;
+  text-transform: uppercase;
+}
+
+.timbre-linhas .timbre-titulo {
+  margin: .4rem 0 .2rem;
+  font: 800 1.8rem/1.05 var(--fonte-titulo);
+  font-stretch: condensed;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+}
+.timbre-titulo a {
+  color: var(--tinta);
+  text-decoration: none;
+}
+.timbre-titulo a:hover { text-decoration: underline; text-decoration-thickness: 3px; }
+
+.timbre-meta {
+  font-family: var(--fonte-oficial);
+  font-size: .68rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--tinta-fraca);
+}
+
+/* O estêncil. Reto, pesado, recém-pintado: a diferença inteira para o
+   carimbo torto e gasto de Ossara. A linha interna é a chapa. */
+.carimbo {
+  grid-area: carimbo;
+  justify-self: end;
+  display: inline-grid;
+  justify-items: center;
+  gap: .05em;
+  margin: 0;
+  padding: .55rem 1.1rem .5rem;
+  border: 3px solid var(--carimbo);
+  box-shadow: inset 0 0 0 3px var(--fundo), inset 0 0 0 4px var(--carimbo);
+  color: var(--carimbo);
+  font-family: var(--fonte-oficial);
+  text-transform: uppercase;
+}
+.carimbo-verbo {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: .26em;
+  text-indent: .26em;
+  line-height: 1.15;
+}
+.carimbo-orgao {
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .3em;
+  text-indent: .3em;
+}
+
+/* ── Controles: fase e a hora da Lança ─────────────────────────── */
+
+.controles { display: none; }
+.js .controles {
+  grid-area: controles;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem 1rem;
+}
+
+.seletor {
+  display: flex;
+  border: 2px solid var(--tinta);
+}
+
+.seletor button {
+  margin: 0;
+  padding: .3rem .75rem;
+  border: 0;
+  border-right: 2px solid var(--tinta);
+  background: transparent;
+  color: var(--tinta-fraca);
+  font: 700 .68rem/1.4 var(--fonte-oficial);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.seletor button:last-child { border-right: 0; }
+.seletor button:hover { color: var(--tinta); background: var(--fundo-2); }
+.seletor button[aria-pressed="true"] {
+  background: var(--tinta);
+  color: var(--fundo);
+}
+
+.hora-neutra { display: none; }
+[data-fase="fio"] .hora-neutra {
+  display: block;
+  margin: 0;
+  font: 700 .68rem var(--fonte-oficial);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--brasa);
+}
+
+/* ── A folha ───────────────────────────────────────────────────── */
+
+.folha {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  max-width: var(--pagina);
+  margin: 0 auto;
+  padding: 0 var(--margem);
+}
+
+@media (min-width: 62rem) {
+  .folha {
+    grid-template-columns: var(--sumario) minmax(0, 1fr);
+    gap: var(--vao);
+    padding-top: 2.5rem;
+  }
+}
+
+/* ── Índice ────────────────────────────────────────────────────── */
+
+.sumario-rotulo {
+  margin: 0 0 .5rem;
+  font: 700 .66rem var(--fonte-oficial);
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--tinta-fraca);
+}
+
+.sumario ol {
+  display: flex;
+  gap: .35rem;
+  margin: 0;
+  padding: 0 0 .5rem;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+}
+.sumario li { flex: 0 0 auto; scroll-snap-align: start; }
+
+.sumario a {
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+  padding: .35rem .6rem;
+  border: 2px solid var(--regua);
+  color: var(--tinta);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.sumario a:hover { background: var(--fundo-2); border-color: var(--tinta); }
+.sumario a[aria-current="page"] {
+  background: var(--tinta);
+  border-color: var(--tinta);
+  color: var(--fundo);
+}
+.sumario a[aria-current="page"] .sumario-numero { color: var(--fundo); }
+
+.sumario-numero {
+  font: 700 .68rem var(--fonte-oficial);
+  color: var(--brasa);
+}
+.sumario-titulo {
+  font: 700 .82rem/1.3 var(--fonte-titulo);
+  font-stretch: condensed;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 62rem) {
+  .sumario {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    max-height: 100vh;
+    overflow-y: auto;
+    padding: 1.5rem 0;
+    margin-top: -2.5rem;
+  }
+  .sumario ol {
+    display: block;
+    overflow: visible;
+    padding: 0;
+    border-top: 2px solid var(--tinta);
+  }
+  .sumario li { border-bottom: 1px solid var(--regua); }
+  .sumario a {
+    border: 0;
+    padding: .4rem .5rem .4rem .6rem;
+    white-space: normal;
+  }
+  .sumario a:hover { background: var(--fundo-2); }
+  .sumario-numero { min-width: 1.8em; }
+}
+
+/* ── O documento ───────────────────────────────────────────────── */
+
+/* Largura definida, não fit-content: com margem automática dentro da
+   célula da grade, o documento herdava o mínimo da tabela mais larga e
+   estourava o celular. Centrar é trabalho da grade. */
+.documento {
+  justify-self: center;
+  width: 100%;
+  min-width: 0;
+  max-width: var(--medida);
+  padding: 2rem 0 1rem;
+}
+@media (min-width: 62rem) {
+  .documento { padding-top: 0; }
+}
+
+.documento > :first-child { margin-top: 0; }
+
+.documento h1 {
+  margin: 0 0 1.8rem;
+  padding-bottom: .5rem;
+  border-bottom: 4px solid var(--tinta);
+  font: 800 2.2rem/1.05 var(--fonte-titulo);
+  font-stretch: condensed;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+}
+
+.documento h2 {
+  position: relative;
+  margin: 3rem 0 1rem;
+  padding-top: .6rem;
+  border-top: 3px solid var(--tinta);
+  font: 800 1.2rem/1.25 var(--fonte-titulo);
+  font-stretch: condensed;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+/* O glifo da fase abre o título, como marca de estêncil: bloco cheio
+   no fogo, vazado no frio, lâmina na hora da Lança. */
+.documento h2::before {
+  content: var(--glifo);
+  margin-right: .55em;
+  font-size: .72em;
+  vertical-align: .08em;
+  color: var(--brasa);
+}
+
+.documento h3 {
+  margin: 1.8rem 0 .5rem;
+  font: 700 .9rem/1.35 var(--fonte-titulo);
+  font-stretch: condensed;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--tinta-fraca);
+}
+
+.documento p { margin: 0 0 1.1rem; }
+
+.documento ul,
+.documento ol { margin: 0 0 1.1rem; padding-left: 1.4rem; }
+.documento ul { list-style: square; }
+.documento li { margin-bottom: .35rem; }
+.documento li::marker { color: var(--brasa); font-weight: 700; }
+
+.documento hr {
+  height: 0;
+  margin: 2rem 0 0;
+  border: 0;
+  border-top: 1px solid var(--regua);
+}
+
+.documento strong { font-weight: 700; }
+
+/* O mapa. Imagem de conteúdo, emoldurada como os quadros: borda de
+   ferro, nunca mais larga que a medida. O link em volta abre o arquivo
+   inteiro, e a legenda é o `em` logo abaixo. */
+.documento img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 .7rem;
+  border: 2px solid var(--tinta);
+  background: var(--fundo-2);
+}
+.documento p:has(> a > img) { margin-bottom: .5rem; }
+.documento p:has(> a > img) a { display: block; }
+
+/* Estêncil não tem itálico. O que a origem põe em itálico — a
+   assinatura dos Vasht, o lema do Feixe — sai em caixa alta espaçada. */
+.documento em {
+  font-style: normal;
+  font-family: var(--fonte-titulo);
+  font-stretch: condensed;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--tinta-fraca);
+}
+
+.documento code {
+  font: .9em var(--fonte-oficial);
+  background: var(--fundo-2);
+  padding: .1em .3em;
+}
+
+/* ── O artigo ──────────────────────────────────────────────────── */
+
+/* O número do artigo sai do parágrafo e vai para a goteira, como num
+   código de lei. É o script do layout que o reconhece — "Art. N." em
+   negrito abrindo o parágrafo — e o transforma em âncora: #art-55
+   leva ao artigo 55, e é assim que se cita o regulamento na mesa.
+   Sem script, fica o negrito, e está bom. */
+.artigo {
+  display: inline-block;
+  margin-right: .45em;
+  padding: 0 .4em;
+  border: 2px solid currentColor;
+  color: var(--brasa);
+  font: 700 .66rem/1.55 var(--fonte-oficial);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: .12em;
+}
+.artigo:hover { background: var(--brasa); color: var(--fundo); }
+
+@media (min-width: 62rem) {
+  .documento p.tem-artigo { position: relative; }
+  .artigo {
+    position: absolute;
+    top: .2em;
+    right: calc(100% + .9rem);
+    width: var(--goteira);
+    margin: 0;
+    padding: 0 .35em;
+    text-align: right;
+    border-color: transparent;
+    border-right: 2px solid var(--regua);
+  }
+  .artigo:hover {
+    background: transparent;
+    color: var(--brasa);
+    border-right-color: var(--brasa);
+  }
+}
+
+/* Chegou pelo link: o artigo acende. */
+.documento p:has(> .artigo:target) {
+  background: var(--fundo-2);
+  outline: 2px solid var(--brasa);
+  outline-offset: .45rem;
+}
+.documento p:has(> .artigo:target) .artigo { color: var(--brasa); border-color: var(--brasa); }
+
+/* ── Citações: o juramento e o que é "fora do regulamento" ──────── */
+
+/* Citação pura é o juramento: pesada, centrada, com as barras do
+   portão. As quebras de linha da origem são respeitadas. */
+.documento blockquote {
+  margin: 1.8rem 0;
+  padding: 1rem 1.2rem;
+  border-top: 3px solid var(--tinta);
+  border-bottom: 3px solid var(--tinta);
+  color: var(--tinta);
+  text-align: center;
+  font: 700 1.1rem/1.5 var(--fonte-titulo);
+  font-stretch: condensed;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.documento blockquote p { white-space: pre-line; }
+.documento blockquote > :last-child { margin-bottom: 0; }
+
+/* Citação com título é aviso de mesa — "para a ficha", "fora do
+   regulamento". Não é voz de Doryan, e a caixa tracejada diz isso. */
+.documento blockquote:has(h3) {
+  border: 2px dashed var(--tinta-fraca);
+  padding: 1rem 1.2rem;
+  background: var(--fundo-2);
+  text-align: left;
+  font: 1rem/1.6 var(--fonte-corpo);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.documento blockquote:has(h3) p { white-space: normal; }
+.documento blockquote:has(h3) h3 {
+  margin: 0 0 .6rem;
+  color: var(--tinta-fraca);
+}
+
+/* ── Tabelas: quadro de quartel ────────────────────────────────── */
+
+.documento table {
+  display: block;          /* o próprio contêiner de rolagem          */
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 0 0 1.6rem;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  font-size: .93rem;
+}
+
+.documento th,
+.documento td {
+  min-width: 9rem;
+  padding: .5rem .75rem;
+  text-align: left;
+  vertical-align: top;
+  border: 1px solid var(--regua);
+}
+
+.documento thead th {
+  background: var(--tinta);
+  color: var(--fundo);
+  border-color: var(--tinta);
+  font: 700 .66rem/1.5 var(--fonte-oficial);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.documento tbody tr:nth-child(even) { background: var(--faixa); }
+.documento tbody tr:last-child td { border-bottom: 2px solid var(--tinta); }
+.documento td:first-child { min-width: 5rem; }
+.documento tbody td:first-child {
+  font: 700 .86rem/1.5 var(--fonte-titulo);
+  font-stretch: condensed;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+/* ── Paginação ─────────────────────────────────────────────────── */
+
+.paginacao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-top: 3.5rem;
+  padding-top: 1.2rem;
+  border-top: 3px solid var(--tinta);
+}
+
+.paginacao a {
+  display: grid;
+  gap: .15rem;
+  max-width: 48%;
+  color: var(--tinta);
+  text-decoration: none;
+}
+.paginacao-seguinte { text-align: right; margin-left: auto; }
+
+.paginacao-rotulo {
+  font: 700 .66rem var(--fonte-oficial);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--tinta-fraca);
+}
+.paginacao-titulo {
+  font: 700 1rem/1.3 var(--fonte-titulo);
+  font-stretch: condensed;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--brasa);
+}
+.paginacao a:hover .paginacao-titulo { text-decoration: underline; }
+
+/* ── Rodapé: a Parede ─────────────────────────────────────────── */
+
+/* A última linha de toda página é a do art. 6, gravada em ferro de
+   ponta a ponta, como o nome que não vai entrar. */
+.rodape {
+  position: relative;
+  z-index: 2;
+  margin: 4rem 0 0;
+  padding: 2rem var(--margem) 2.4rem;
+  background: var(--tinta);
+  color: var(--fundo);
+  transition: background-color .2s linear, color .2s linear;
+}
+
+.advertencia {
+  max-width: 52ch;
+  margin: 0 auto;
+  text-align: center;
+  font: 700 .95rem/1.5 var(--fonte-titulo);
+  font-stretch: condensed;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: inherit;
+}
+
+.endereco { display: none; }
+
+/* ── Impressão: o regulamento volta a ser papel de quartel ─────── */
+
+@media print {
+  :root,
+  [data-fase="sol"],
+  [data-fase="lua"],
+  [data-fase="fio"] {
+    --fundo:       #fff;
+    --fundo-2:     #fff;
+    --faixa:       #f2f2f2;
+    --tinta:       #000;
+    --tinta-fraca: #333;
+    --regua:       #999;
+    --brasa:       #000;
+    --brasa-fraca: #666;
+    --carimbo:     #000;
+    --glifo: "■";
+    --grao: 0;
+  }
+
+  body { font-size: 10.5pt; border-top: 0; }
+  body::before { display: none; }
+
+  .pular,
+  .sumario,
+  .seletor,
+  .hora-neutra,
+  .paginacao { display: none !important; }
+
+  .timbre,
+  .folha { max-width: none; padding-left: 0; padding-right: 0; }
+
+  .documento { max-width: 72ch; padding-top: .5rem; }
+
+  .documento p.tem-artigo { position: static; }
+  .artigo {
+    position: static;
+    width: auto;
+    margin-right: .45em;
+    text-align: left;
+    border: 1.5px solid #000;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  .documento h1,
+  .documento h2,
+  .documento h3 { break-after: avoid; }
+  .documento table,
+  .documento tr,
+  .documento img,
+  .documento blockquote { break-inside: avoid; }
+  .documento p { orphans: 3; widows: 3; }
+
+  .rodape { background: none; color: #000; padding: 1rem 0 0; border-top: 2px solid #000; }
+  .endereco {
+    display: block;
+    margin: 1rem 0 0;
+    text-align: center;
+    font: .7rem var(--fonte-oficial);
+    letter-spacing: .1em;
+    color: var(--tinta-fraca);
+  }
+}
+
+/* ── Movimento ────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}

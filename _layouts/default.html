@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="pt-BR" data-fase="sol">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% if page.numero %}{{ page.numero }} · {{ page.rotulo }} — {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+<meta name="description" content="{{ site.description | strip_newlines | strip }}">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='none' stroke='%239a2f12' stroke-width='3.5'/%3E%3Cpath d='M32 5L43 27L32 36L21 27Z' fill='%239a2f12'/%3E%3Crect x='29.5' y='35' width='5' height='24' fill='%239a2f12'/%3E%3Crect x='23' y='38' width='18' height='3.5' fill='%239a2f12'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/regulamento.css">
+<script>
+/* Fase do céu. Roda antes da primeira pintura para a página nunca piscar.
+   Sem script, o documento fica na fase do sol e o seletor não aparece. */
+(function () {
+  var raiz = document.documentElement;
+  raiz.className += ' js';
+  var CHAVE = 'regulamento:fase';
+
+  /* 12h de domínio solar, 12h de domínio lunar, 6 minutos de virada em cada
+     ponta: 05:57–06:03 e 17:57–18:03. */
+  function doCeu(agora) {
+    var m = agora.getHours() * 60 + agora.getMinutes();
+    if ((m >= 357 && m < 363) || (m >= 1077 && m < 1083)) return 'fio';
+    return (m >= 363 && m < 1077) ? 'sol' : 'lua';
+  }
+
+  function escolhida() {
+    try {
+      var v = localStorage.getItem(CHAVE);
+      return (v === 'sol' || v === 'lua') ? v : 'ceu';
+    } catch (e) { return 'ceu'; }
+  }
+
+  function aplicar() {
+    var e = escolhida();
+    raiz.setAttribute('data-fase', e === 'ceu' ? doCeu(new Date()) : e);
+    var botoes = document.querySelectorAll('.seletor button[data-escolha]');
+    for (var i = 0; i < botoes.length; i++) {
+      botoes[i].setAttribute('aria-pressed',
+        botoes[i].getAttribute('data-escolha') === e ? 'true' : 'false');
+    }
+  }
+
+  aplicar();
+
+  document.addEventListener('DOMContentLoaded', function () {
+    aplicar();
+
+    /* Os artigos. "Art. N." em negrito abrindo um parágrafo vira âncora
+       (#art-N) e sai para a goteira. Sem script fica o negrito. */
+    var fortes = document.querySelectorAll('.documento p > strong:first-child');
+    for (var k = 0; k < fortes.length; k++) {
+      var m = /^Art\.\s*(\d+)\.$/.exec(fortes[k].textContent.trim());
+      if (!m) continue;
+      var a = document.createElement('a');
+      a.className = 'artigo';
+      a.id = 'art-' + m[1];
+      a.href = '#art-' + m[1];
+      a.textContent = 'Art. ' + m[1];
+      a.setAttribute('aria-label', 'Artigo ' + m[1]);
+      fortes[k].parentNode.className += ' tem-artigo';
+      fortes[k].parentNode.replaceChild(a, fortes[k]);
+    }
+
+    var seletor = document.querySelector('.seletor');
+    if (!seletor) return;
+    seletor.addEventListener('click', function (ev) {
+      var b = ev.target.closest ? ev.target.closest('button[data-escolha]') : null;
+      if (!b) return;
+      try { localStorage.setItem(CHAVE, b.getAttribute('data-escolha')); } catch (e) {}
+      aplicar();
+    });
+  });
+
+  /* Reavalia sozinho, para a virada acontecer com a página aberta. */
+  setInterval(aplicar, 20000);
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) aplicar();
+  });
+})();
+</script>
+</head>
+<body>
+
+<a class="pular" href="#conteudo">pular para o conteúdo</a>
+
+<header class="timbre">
+  <div class="timbre-marca">
+    <!-- Selo da Lança: a ponta dentro do mesmo anel que Ossara usa, porque
+         o mundo é um só. Ponta, haste e alvado — as três primeiras patentes
+         estão no desenho. Herda a cor da fase. -->
+    <svg class="selo" viewBox="0 0 64 64" role="img" aria-label="Selo da Lança de Doryan">
+      <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="2" opacity=".5"/>
+      <path d="M32 6L42.5 27L32 35.5L21.5 27Z" fill="currentColor" opacity=".95"/>
+      <rect x="30" y="34.5" width="4" height="24" fill="currentColor"/>
+      <rect x="24" y="37.5" width="16" height="3" fill="currentColor" opacity=".8"/>
+    </svg>
+    <div class="timbre-linhas">
+      <p class="timbre-guilda">A Lança de Doryan</p>
+      <p class="timbre-titulo"><a href="index.html">Regulamento do Recruta</a></p>
+      <p class="timbre-meta">entregue no alistamento · não se perde, não se vende</p>
+    </div>
+  </div>
+
+  <p class="carimbo" aria-label="Por ordem do Feixe">
+    <span class="carimbo-verbo">Por ordem</span>
+    <span class="carimbo-orgao">do Feixe</span>
+  </p>
+
+  <div class="controles">
+    <div class="seletor" role="group" aria-label="Fase">
+      <button type="button" data-escolha="sol" aria-pressed="false">fogo</button>
+      <button type="button" data-escolha="lua" aria-pressed="false">frio</button>
+      <button type="button" data-escolha="ceu" aria-pressed="true">seguir o céu</button>
+    </div>
+    <p class="hora-neutra">a hora da Lança</p>
+  </div>
+</header>
+
+{% assign docs = site.pages | where_exp: "d", "d.ordem" | sort: "ordem" %}
+{% assign atual = -1 %}
+{% for d in docs %}{% if d.url == page.url %}{% assign atual = forloop.index0 %}{% endif %}{% endfor %}
+{% assign ianterior = atual | minus: 1 %}
+{% assign iseguinte = atual | plus: 1 %}
+
+<div class="folha">
+
+  <nav class="sumario" aria-label="Índice do regulamento">
+    <p class="sumario-rotulo">Índice</p>
+    <ol>
+      {% for d in docs %}
+      <li>
+        <a href="{{ d.name | replace: '.md', '.html' }}"{% if d.url == page.url %} aria-current="page"{% endif %}>
+          <span class="sumario-numero">{{ d.numero }}</span>
+          <span class="sumario-titulo">{{ d.rotulo }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ol>
+  </nav>
+
+  <main id="conteudo" class="documento">
+    {{ content }}
+
+    {% if atual >= 0 %}
+    <nav class="paginacao" aria-label="Documento anterior e seguinte">
+      {% for d in docs %}{% if forloop.index0 == ianterior %}
+      <a class="paginacao-anterior" rel="prev" href="{{ d.name | replace: '.md', '.html' }}">
+        <span class="paginacao-rotulo">anterior</span>
+        <span class="paginacao-titulo">{{ d.rotulo }}</span>
+      </a>
+      {% endif %}{% endfor %}
+      {% for d in docs %}{% if forloop.index0 == iseguinte %}
+      <a class="paginacao-seguinte" rel="next" href="{{ d.name | replace: '.md', '.html' }}">
+        <span class="paginacao-rotulo">seguinte</span>
+        <span class="paginacao-titulo">{{ d.rotulo }}</span>
+      </a>
+      {% endif %}{% endfor %}
+    </nav>
+    {% endif %}
+  </main>
+
+</div>
+
+<footer class="rodape">
+  <p class="advertencia">O recruta que morrer por desobedecer este regulamento não terá o nome na Parede.</p>
+  <p class="endereco">guicassol8.github.io/khaerys-regulamento</p>
+</footer>
+
+</body>
+</html>
